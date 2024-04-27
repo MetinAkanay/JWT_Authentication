@@ -1,5 +1,7 @@
 
+using JWT_Authentication.DMO;
 using JWT_Authentication.Services;
+using Microsoft.EntityFrameworkCore;
 using static JWT_Authentication.Services.AdventureWorksService;
 
 namespace JWT_Authentication
@@ -21,6 +23,7 @@ namespace JWT_Authentication
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAdventureWorksService, AdventureWorksService>();
+            builder.Services.AddScoped(typeof(AdventureWorks2019Context));
 
 
             var app = builder.Build();
