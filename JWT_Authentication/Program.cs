@@ -1,7 +1,12 @@
 
 using JWT_Authentication.DMO;
 using JWT_Authentication.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using static JWT_Authentication.Services.AdventureWorksService;
 
 namespace JWT_Authentication
@@ -25,6 +30,27 @@ namespace JWT_Authentication
             builder.Services.AddScoped<IAdventureWorksService, AdventureWorksService>();
             builder.Services.AddScoped(typeof(AdventureWorks2019Context));
 
+            // JWT ile ilgili bildirimler buraya yazýlacaktýr
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(s =>
+            {
+                s.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["AppSettings:ValidIssuer"],
+                    ValidAudience = builder.Configuration["AppSettings:ValidAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Secret"]))
+                };
+            });
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -37,10 +63,11 @@ namespace JWT_Authentication
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
-
-
             app.MapControllers();
+
+            // Sisteme belirtelim
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.Run();
         }
