@@ -1,5 +1,6 @@
 
 using JWT_Authentication.Services;
+using static JWT_Authentication.Services.AdventureWorksService;
 
 namespace JWT_Authentication
 {
@@ -19,6 +20,8 @@ namespace JWT_Authentication
             // eklediðimiz service ve interfaceleri ctor injection yapalým
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IAdventureWorksService, AdventureWorksService>();
+
 
             var app = builder.Build();
 
