@@ -18,6 +18,7 @@ namespace JWT_Authentication
 
             // eklediðimiz service ve interfaceleri ctor injection yapalým
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
 
             var app = builder.Build();
 

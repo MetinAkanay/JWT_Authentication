@@ -4,6 +4,11 @@ namespace JWT_Authentication.Services
 {
     public class AuthService : IAuthService
     {
+        private ITokenService _tokenservice { get; set; }
+        public AuthService(ITokenService tokenservice)
+        {
+            _tokenservice = tokenservice;
+        }
         public UserLoginResponse Login(UserLoginRequest request)
         {
             UserLoginResponse response = new UserLoginResponse();
@@ -15,11 +20,13 @@ namespace JWT_Authentication.Services
             }
             if (request.Username=="root" && request.Password=="1010")
             {
+                var generateTokenResult = _tokenservice.GenerateToken(new GenerateTokenRequest { Username = request.Username });
                 response = new UserLoginResponse
                 {
-                    AuthToken = string.Empty,
+                    // Tokenservice tarafından üretiken token değerini AuthToken kısmına verelim
+                    AuthToken = generateTokenResult.Token,
                     IsAuthenticated = true,
-                    TokenExpireDate = DateTime.Now.AddHours(3)
+                    TokenExpireDate = generateTokenResult.TokenExpireDate
                 };
             }
             else
